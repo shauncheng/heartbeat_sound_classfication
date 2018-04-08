@@ -3,8 +3,9 @@
 Created on Sat Apr  7 18:12:43 2018
 
 @author: shuan
+
+this file is used to test other function, so ignore it!
 """
-from pre_process import AudioTool
 
 def main():
     print('model launch')
