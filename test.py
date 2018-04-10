@@ -15,9 +15,13 @@ def main():
     segVector=audioTool.getSegment(length=2000,isPlot=True)
     print('截取长度:2000')
     
-    array=np.arange(10)
+    tx=np.random.randn(20,2048,1)
+    ty=np.random.randn(20,1)
+    vx=np.random.randn(10,2048)
+    vy=np.random.randn(10)
     train= ToHdf5()
-#    train.writeData('testHdf5.hdf5',array,array,array,array)
-    a,b,b,d=train.loadData('testHdf5.hdf5')
+    train.writeData('testHdf5.hdf5',tx,ty,vx,vy)
+#    a,b,b,d=train.loadData('testHdf5.hdf5')
+#    print(a[1,:,:])
 if __name__=='__main__':
     main()
