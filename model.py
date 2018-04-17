@@ -4,7 +4,7 @@ Created on Sat Apr  7 15:25:22 2018
 
 @author: shuan
 """
-import tensorflow as tf
+#import tensorflow as tf
 import numpy as np
 import keras
 from pre_process import ToHdf5
@@ -32,5 +32,5 @@ X_train,Y_train,b,d=train.loadData('testHdf5.hdf5')
 hmodel=heartSoundModel(X_train.shape[1:])
 hmodel.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
 hmodel.fit(x=X_train,y=Y_train,epochs=4,batch_size=10)
-#hmodel.train_on_batch(X_train,Y_train)
-hmodel.save_weights("weight.hdf5")
+hmodel.train_on_batch(X_train,Y_train)
+#hmodel.save_weights("weight.hdf5")
