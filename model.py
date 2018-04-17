@@ -9,7 +9,6 @@ import numpy as np
 import keras
 from pre_process import ToHdf5
 import h5py
-
 #keras训练模型，输入（模型的输入）
 def heartSoundModel(X_shape):
     X_input=keras.layers.Input(X_shape)
@@ -31,6 +30,7 @@ train= ToHdf5()
 X_train,Y_train,b,d=train.loadData('testHdf5.hdf5')
 hmodel=heartSoundModel(X_train.shape[1:])
 hmodel.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
-hmodel.fit(x=X_train,y=Y_train,epochs=4,batch_size=10)
+hmodel.fit(x=X_train,y=Y_train,epochs=10,batch_size=10)
 #hmodel.train_on_batch(X_train,Y_train)
-hmodel.save_weights("weight.hdf5")
+#hmodel.save_weights("weight.hdf5")
+#keras.utils.plot_model(hmodel)
