@@ -12,7 +12,6 @@ import numpy as np
 def main():
     print('model launch')
 <<<<<<< HEAD
-    audioTool=AudioTool('./audio_data/training-a/a0001.wav')
     segVector=audioTool.getSegment(length=2000,isPlot=True)
     print('截取长度:2000')
     

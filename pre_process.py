@@ -27,14 +27,8 @@ class AudioTool:
             if os.path.splitext(i)[1] == fileType:
                 self.fileList.append(i)
         
-#        self.wavefile=wave.open(path,'r')
-#        (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)=self.wavefile.getparams()
-#获取音频基本信息 输出（返回该段音频基本信息）   
-#    def getAudioInfo(self):
-#        return (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)
 
 #音频截取，从多个周期当中截取一个周期以上长度，
-        print('截取位置:',segPos)
     def cutAudio(self,cutLen):
         cutAudios = np.empty((0,cutLen))
         for i in range(len(self.fileList)):
