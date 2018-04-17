@@ -8,38 +8,87 @@ import pylab as pl
 import wave
 import numpy as np
 import h5py
+import os
+import csv
+
 ##音频预处理
 class AudioTool:
     wavefile=None
+    fileList=[]
+    cutNums=[]
+    filePath=None
     (nchannels, sampwidth, framerate, nframes, comptype, compname)=(None,None,None,None,None,None)
-    def __init__(self,path):
-        self.wavefile=wave.open(path,'r')
-        (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)=self.wavefile.getparams()
-    
+
+#获取不同类型文件名存入fnames数组
+    def __init__(self,path,fileType):
+        self.filePath=path
+        dirs = os.listdir(path)
+        for i in dirs:
+            if os.path.splitext(i)[1] == fileType:
+                self.fileList.append(i)
+        
+#        self.wavefile=wave.open(path,'r')
+#        (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)=self.wavefile.getparams()
 #获取音频基本信息 输出（返回该段音频基本信息）   
-    def getAudioInfo(self):
-        return (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)
+#    def getAudioInfo(self):
+#        return (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)
 
 #音频截取，从多个周期当中截取一个周期以上长度，
-#输入截取长度，是否可视化
-#输出截取向量，输入（截取长度，是否可视化）
-    def getSegment(self, length, isPlot=False):
-        audioVector=self.wavefile.readframes(self.nframes)
-        audioVector = np.frombuffer(audioVector,dtype = np.short)
-        segPos=np.random.randint(0,self.nframes-length-1000)
         print('截取位置:',segPos)
-        segVector=audioVector[segPos:segPos+length]
-        if isPlot:
-            newVector=np.zeros(self.nframes)
-            newVector[segPos:segPos+length]=segVector
-            pl.plot(audioVector/6400)
-            pl.plot(newVector/6400)
-        return segVector
+    def cutAudio(self,cutLen):
+        cutAudios = np.empty((0,cutLen))
+        for i in range(len(self.fileList)):
+            
+#获取音频基本信息
+            filepath=self.filePath
+            Path = filepath+'/'+self.fileList[i]
+            self.wavefile = wave.open(Path,'r')
+            (self.nchannels, self.sampwidth, self.framerate, self.nframes, self.comptype, self.compname)=self.wavefile.getparams()
+            
+#获取音频文件向量信息
+            audioVector = self.wavefile.readframes(self.nframes)
+            audioVector = np.frombuffer(audioVector,dtype = np.short)
+            
+#裁剪单个音频存入segVectors矩阵            
+            cutnum = self.nframes//cutLen//2
+            self.cutNums.append(cutnum)
+            segVectors = np.empty((cutnum,cutLen))
+            segPos = 0
+            for j in range(cutnum):
+                segPos = np.random.randint(segPos,cutLen+segPos)
+                segVector = audioVector[segPos:segPos+cutLen]
+                segPos = segPos+cutLen
+                segVectors[j,:] = segVector
+
+#将所有截取到的音频存入cutAudios矩阵
+            cutAudios = np.row_stack((cutAudios,segVectors))
+        cutAudios = cutAudios.reshape(cutAudios.shape[0],cutLen,1)
+        return cutAudios
+ 
+#获取csv文件信息
+    def get_csv(self):
+        Path = self.filePath+"//REFERENCE.csv"
+        csvfile = csv.reader(open(Path,'r'))
+        inforY = []
+        for i in csvfile:
+            inforY.append(i[1])
+
+#生成trainY矩阵            
+        trainY = []
+        for i in range(len(self.cutNums)):
+            for j in range(self.cutNums[i]):
+                trainY.append(inforY[i])
+        trainY = np.array(trainY)
+        trainY = trainY.reshape(trainY.shape[0],1)
+        return trainY
+        
+
 
 #音频去噪处理
     def filterNoise():
         pass
     
+
 #将处理过后的每一个训练集，向量存成hdf5文件
 class ToHdf5:
     __fw=None
