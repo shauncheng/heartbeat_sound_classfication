@@ -103,7 +103,7 @@ class ToHdf5:
 
 #加载函数，将hdf5的数据加载到内存，输入（加载文件名）
     def loadData(self,name):
-        self.fr=h5py.File("testHdf5.hdf5",'r')
+        self.fr=h5py.File(name,'r')
         train_X=self.fr["train"]["train_X"].value
         train_Y=self.fr["train"]["train_Y"].value
         validation_X=self.fr["validation"]["validation_X"].value

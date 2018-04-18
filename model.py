@@ -28,9 +28,10 @@ def heartSoundModel(X_shape):
 
 
 train= ToHdf5()
-X_train,Y_train,b,d=train.loadData('testHdf5.hdf5')
+X_train,Y_train,b,d=train.loadData('test.h5')
 hmodel=heartSoundModel(X_train.shape[1:])
 hmodel.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
 hmodel.fit(x=X_train,y=Y_train,epochs=4,batch_size=10)
 hmodel.train_on_batch(X_train,Y_train)
-#hmodel.save_weights("weight.hdf5")
+hmodel.save_weights("weight.h5")
+hmodel.load_weights('weight.h5')
