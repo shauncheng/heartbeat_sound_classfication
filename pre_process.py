@@ -54,8 +54,10 @@ class AudioTool:
                 segPos = segPos+cutLen
                 segVectors[j,:] = segVector
 
-#将所有截取到的音频存入cutAudios矩阵
+#归一化处理,将所有截取到的音频存入cutAudios矩阵
             cutAudios = np.row_stack((cutAudios,segVectors))
+#        cutAudios = (cutAudios-np.mean(cutAudios))/(np.max(cutAudios)-np.min(cutAudios))
+        cutAudios = cutAudios/250
         cutAudios = cutAudios.reshape(cutAudios.shape[0],cutLen,1)
         return cutAudios
  
@@ -71,6 +73,7 @@ class AudioTool:
         trainY = []
         for i in range(len(self.cutNums)):
             for j in range(self.cutNums[i]):
+                inforY[i] = int(inforY[i])
                 trainY.append(inforY[i])
         trainY = np.array(trainY)
         trainY = trainY.reshape(trainY.shape[0],1)
