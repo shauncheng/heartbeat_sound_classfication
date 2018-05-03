@@ -80,6 +80,7 @@ class AudioTool:
         trainY = np.array(trainY)
         trainY = trainY.reshape(trainY.shape[0],1)
         return trainY
+    
     def Resample(self,input_signal,src_fs,tar_fs):
         '''
     
@@ -125,7 +126,18 @@ class ToHdf5:
        self.validation["validation_X"]=validation_X
        self.validation["validation_Y"]=validation_Y
        self.fw.close()
-
+       
+       
+    def counDdata(self,name):
+        data = self.loadData(name)
+        train_Y = list(data[1].reshape(len(data[1]),))
+        train_Y0 = train_Y.count(0)
+        train_Y1 = train_Y.count(1)
+        validation_Y = list(data[3].reshape(len(data[3]),))
+        validation_Y0 = validation_Y.count(0)
+        validation_Y1 = validation_Y.count(1)
+        return [train_Y0,train_Y1,validation_Y0,validation_Y1]
+        
 #加载函数，将hdf5的数据加载到内存，输入（加载文件名）
     def loadData(self,name):
         self.fr=h5py.File(name,'r')
