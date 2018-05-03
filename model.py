@@ -7,7 +7,7 @@ Created on Sat Apr  7 15:25:22 2018
 #import tensorflow as tf
 import keras
 from keras import regularizers
-#keras训练模型，输入（模型的输入）
+#keras训练模型,dropout正则化，输入（模型的输入）
 def heartSoundModel_reg(X_shape):
     X_input=keras.layers.Input(X_shape)
     print(X_input)
@@ -22,7 +22,7 @@ def heartSoundModel_reg(X_shape):
     X=keras.layers.Dense(1,activation="sigmoid",use_bias=True,name="full_1")(X)
     model=keras.Model(inputs=X_input,outputs=X,name="heartSoundModel")
     return model
-
+#keras训练模型,未正则化，输入（模型的输入）
 def heartSoundModel(X_shape):
     X_input=keras.layers.Input(X_shape)
     print(X_input)
