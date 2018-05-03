@@ -4,7 +4,7 @@ Created on Sat Apr  7 15:26:45 2018
 
 @author: shuan
 """
-import pylab as pl  
+
 import wave
 import numpy as np
 import h5py
@@ -20,7 +20,8 @@ class AudioTool:
     (nchannels, sampwidth, framerate, nframes, comptype, compname)=(None,None,None,None,None,None)
 
 #获取不同类型文件名存入fnames数组
-    def __init__(self,path,fileType):
+    def findFile(self,path,fileType):
+        self.fileList=[]
         self.filePath=path
         dirs = os.listdir(path)
         for i in dirs:
@@ -30,7 +31,8 @@ class AudioTool:
 
 #音频截取，从多个周期当中截取一个周期以上长度，
     def cutAudio(self,cutLen):
-        cutAudios = np.empty((0,cutLen))
+        self.cutNums=[]
+        cutAudios = np.empty((0,int(cutLen/2)))
         for i in range(len(self.fileList)):
             
 #获取音频基本信息
@@ -44,21 +46,21 @@ class AudioTool:
             audioVector = np.frombuffer(audioVector,dtype = np.short)
             
 #裁剪单个音频存入segVectors矩阵            
-            cutnum = self.nframes//cutLen//2
+            cutnum = self.nframes//cutLen-1
             self.cutNums.append(cutnum)
-            segVectors = np.empty((cutnum,cutLen))
+            segVectors = np.empty((cutnum,int(cutLen/2)))
             segPos = 0
             for j in range(cutnum):
                 segPos = np.random.randint(segPos,cutLen+segPos)
                 segVector = audioVector[segPos:segPos+cutLen]
-                segPos = segPos+cutLen
-                segVectors[j,:] = segVector
+                if segVector.shape[0]<cutLen:
+                    break
+                segPos = segPos+1000
+                segVectors[j,:] = self.fft(segVector,cutLen)
 
 #归一化处理,将所有截取到的音频存入cutAudios矩阵
             cutAudios = np.row_stack((cutAudios,segVectors))
-#        cutAudios = (cutAudios-np.mean(cutAudios))/(np.max(cutAudios)-np.min(cutAudios))
-        cutAudios = cutAudios/250
-        cutAudios = cutAudios.reshape(cutAudios.shape[0],cutLen,1)
+        cutAudios = cutAudios.reshape(cutAudios.shape[0],int(cutLen/2),1)
         return cutAudios
  
 #获取csv文件信息
@@ -78,12 +80,32 @@ class AudioTool:
         trainY = np.array(trainY)
         trainY = trainY.reshape(trainY.shape[0],1)
         return trainY
+    def Resample(self,input_signal,src_fs,tar_fs):
+        '''
+    
+        :param input_signal:输入信号
+        :param src_fs:输入信号采样率
+        :param tar_fs:输出信号采样率
+        :return:输出信号
+        '''
+    
+        dtype = input_signal.dtype
+        audio_len = len(input_signal)
+        audio_time_max = 1.0*(audio_len-1) / src_fs
+        src_time = 1.0 * np.linspace(0,audio_len,audio_len) / src_fs
+        tar_time = 1.0 * np.linspace(0,np.int(audio_time_max*tar_fs),np.int(audio_time_max*tar_fs)) / tar_fs
+        output_signal = np.interp(tar_time,src_time,input_signal).astype(dtype)
+    
+        return output_signal
+
         
 
 
 #音频去噪处理
-    def filterNoise():
-        pass
+    def fft(self,vector,cutLen):
+        xf=np.fft.rfft(vector)/cutLen
+        xfp = np.log10(np.clip(np.abs(xf), 1e-20, 1e100))
+        return xfp[:2048]
     
 
 #将处理过后的每一个训练集，向量存成hdf5文件
