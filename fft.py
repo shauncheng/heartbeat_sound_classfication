@@ -75,7 +75,6 @@ def test():
 def main():
     av=readInfo('../training/training-a/a0001.wav')
     fft(av)
-#    test()
 
 if __name__=='__main__':
     main()
