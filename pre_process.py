@@ -11,8 +11,15 @@ import h5py
 import os
 import csv
 
+
+
+
 ##音频预处理
 class AudioTool:
+    """
+    
+    音频处理
+    """
     wavefile=None
     fileList=[]
     cutNums=[]
@@ -77,7 +84,9 @@ class AudioTool:
             for j in range(self.cutNums[i]):
                 inforY[i] = int(inforY[i])
                 trainY.append(inforY[i])
+        
         trainY = np.array(trainY)
+        
         trainY = trainY.reshape(trainY.shape[0],1)
         return trainY
     
